@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 env:
-  DEFAULT: "bug"
-  WORDS: ["fix", "issue", "bug"]
+  default: 'bug'
+  words: ['fix', 'bug', 'error']
 
 jobs:
   issue-open-check:
@@ -20,15 +20,15 @@ jobs:
       - name: Check Title
         id: check-title
         run: |
-          arr=("fix" "test" "feat")
-          default="bug"
-          for word in "${arr[@]}"; do
-            if [[ ${{ github.event.issue.title }} =~ $word ]]; then
-              default=$word
+          title="${{ github.event.issue.title }}"
+          for word in "${{ env.words[@] }}"; do
+            if [[ $title == *"$word"* ]]; then
+              echo "Issue 标题包含关键词: $word"
+              echo "::set-env name=default::$word"
               break
             fi
           done
-          echo "::set-output name=new-default::$default"
+
 
       # - name: add label
       #   uses: actions-cool/issues-helper@v3
