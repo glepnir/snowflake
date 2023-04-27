@@ -28,9 +28,6 @@ jobs:
           done
           echo "DEFAULT 的值为 $DEFAULT"
           echo "::set-output name=myOutput::$DEFAULT"
-        outputs:
-          myOutput: ${{ steps.first-action.outputs.myOutput }}
-
 
       - name: add label
         uses: actions-cool/issues-helper@v3
