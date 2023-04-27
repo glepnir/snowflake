@@ -22,7 +22,7 @@ jobs:
         run: |
           words=("fix" "bug" "issue")
           for word in "${words[@]}"; do
-            if [[ "${{ github.event.pull_request.title }}" == *"$word"* ]]; then
+            if [[ "${{ github.event.issue.title }}" == *"$word"* ]]; then
               echo "检测到关键字：$word"
               echo "::set-output name=default::$word"
               exit 0
