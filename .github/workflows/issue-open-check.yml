@@ -8,8 +8,11 @@ permissions:
   contents: read
 
 env:
-  default: 'bug'
-  words: ['fix', 'bug', 'error']
+  DEFAULT: bug
+  WORDS: |
+    enhancement
+    bugfix
+    feature
 
 jobs:
   issue-open-check:
@@ -17,17 +20,25 @@ jobs:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
     steps:
-      - name: Check Title
-        run: |
-          title="${{ github.event.issue.title }}"
-          for word in "${{ env.words[@] }}"; do
-            if [[ $title == *"$word"* ]]; then
-              echo "Issue 标题包含关键词: $word"
-              echo "::set-env name=default::$word"
-              break
-            fi
-          done
-
+      - name: Check Issue Title
+        id: check_title
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const words = '${{ env.WORDS }}'.split('\n').filter(Boolean);
+            const defaultVal = '${{ env.DEFAULT }}';
+            const title = context.payload.issue.title.toLowerCase();
+            const found = words.some(word => title.includes(word));
+            console.log(`Title: ${title}`);
+            console.log(`Words: ${words}`);
+            console.log(`Found: ${found}`);
+            if (found) {
+              console.log(`Setting DEFAULT to title`);
+              console.log(`Before: ${defaultVal}`);
+              core.exportVariable('DEFAULT', title);
+              console.log(`After: ${process.env.DEFAULT}`);
+            }
 
       # - name: add label
       #   uses: actions-cool/issues-helper@v3
