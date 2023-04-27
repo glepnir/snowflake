@@ -15,9 +15,8 @@ jobs:
     steps:
       - name: check issue title
         id: check-issue
-        uses: actions/github-script@v4
+        uses: actions/github-script@v3
         with:
-          node-version: '16'
           script: |
             const title = context.payload.issue.title;
             const keywords = ['api', 'treesitter', 'ui', 'lsp', 'doc'];
