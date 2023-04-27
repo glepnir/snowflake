@@ -17,27 +17,18 @@ jobs:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
     steps:
-      - name: 第一个 Action
-        id: first-action
+      - name: Check Title
+        id: check-title
         run: |
-          words=("fix" "bug" "issue")
-          for word in "${words[@]}"; do
-            if [[ "${{ github.event.issue.title }}" == *"$word"* ]]; then
-              echo "检测到关键字：$word"
-              echo "::set-output name=default::$word"
-              exit 0
+          arr=("fix" "test" "feat")
+          default="bug"
+          for word in "${arr[@]}"; do
+            if [[ ${{ github.event.issue.title }} =~ $word ]]; then
+              default=$word
+              break
             fi
           done
-          echo "未检测到关键字"
-          echo "::set-output name=default::bug"
-        outputs:
-          default: ${{ steps.first-action.outputs.default }}
-            
-      - name: 第二个 Action
-        id: second-action
-        uses: my-org/my-repo/my-action@v1
-        with:
-          default: ${{ steps.first-action.outputs.default }}
+          echo "::set-output name=new-default::$default"
 
       # - name: add label
       #   uses: actions-cool/issues-helper@v3
