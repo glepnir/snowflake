@@ -20,19 +20,20 @@ jobs:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
     steps:
-      - name: Check Issue Title
-        id: check-title
+      - name: 检查 Issue 标题
+        id: check-issue
         uses: actions/github-script@v4
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const title = github.context.payload.issue.title.toLowerCase();
-            const values = process.env.ARRAY_VALUES.toLowerCase().split('\n');
-            for (const value of values) {
-              if (title.includes(value.trim())) {
-                console.log(`Found value: ${value.trim()}`);
-                console.log(`::set-env name=DEFAULT_VALUE::${value.trim()}`);
-                break;
-              }
+            const title = context.payload.issue.title;
+            const keywords = ['fix', 'bug', 'error']; // 要检查的关键词
+            const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'i');
+            const match = title.match(regex);
+
+            if (match) {
+              console.log(`匹配到关键词：${match[0]}`);
+              core.setOutput('keyword', match[0]); // 将关键词输出到变量中
             }
 
       # - name: add label
