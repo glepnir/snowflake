@@ -12,13 +12,12 @@ jobs:
     permissions:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
-    runs:
-      using: 'node16'
     steps:
       - name: check issue title
         id: check-issue
         uses: actions/github-script@v4
         with:
+          node-version: '16'
           script: |
             const title = context.payload.issue.title;
             const keywords = ['api', 'treesitter', 'ui', 'lsp', 'doc'];
