@@ -61,6 +61,14 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           labels: 'docmentation'
 
+      - name: add filetype label
+        if: (contains(github.event.issue.title, 'filetype') == true) && (github.event.label.name != 'enhancement')
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'add-labels'
+          issue-number: ${{ github.event.issue.number }}
+          labels: 'filetype'
+
       - name: check invalid
         if: (contains(github.event.issue.body, 'Step to Reproduce') == false)
         uses: actions-cool/issues-helper@v3
