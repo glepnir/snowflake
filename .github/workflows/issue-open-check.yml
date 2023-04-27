@@ -7,6 +7,16 @@ on:
 permissions:
   contents: read
 
+env:
+  LABELS: |
+    api
+    ui
+    treesitter
+    lsp
+    docmentaion
+    winbar
+  DEFAULT: 'bug'
+
 jobs:
   issue-open-check:
     permissions:
@@ -14,27 +24,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get label
-        env:
-          LABELS: 'api,ui,treesitter,lsp,docmentaion,winbar'
-          DEFAULT: 'bug'
         run: |
-          IFS=',' read -ra LABELS_ARR <<< "$LABELS"
+          words=("api", "lsp")
 
-          for word in "${LABELS_ARR[@]}"; do
-            if [[ "${{ github.event.issue.title }}" == *"$word"* ]]; then
-              DEFAULT="$word"
+          default="bug"
+
+          for word in "${words[@]}"; do
+            if [[ ${{ github.event.issue.title}} == *"$word"* ]]; then
+              default="$word"
               break
             fi
           done
-          echo "DEFAULT 的值为 $DEFAULT"
-          echo "::set-output name=myOutput::$DEFAULT"
+
+          # 将 default 变量输出到标准输出和 Action 输出中
+          echo "::set-output name=default::$default"
+          echo "default=$default"
 
       - name: add label
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'add-labels'
           issue-number: ${{ github.event.issue.number }}
-          labels: ${{ steps.first-action.outputs.myOutput }}
+          labels:  ${{ steps.first-action.outputs.default }}
 
       - name: check invalid
         if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
