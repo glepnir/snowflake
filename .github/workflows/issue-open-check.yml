@@ -17,35 +17,43 @@ jobs:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
     steps:
-      - name: check title
-        id: check-title
+      - name: 第一个 Action
+        id: first-action
         run: |
-          title="${{ github.event.issue.title }}"
-
-          for word in "${{ env.WORDS[@] }}"; do
-            if [[ $title == *"$word"* ]]; then
-              echo "标题中包含单词 $word"
-              echo "::set-output name=default::${word}"
+          words=("fix" "bug" "issue")
+          for word in "${words[@]}"; do
+            if [[ "${{ github.event.pull_request.title }}" == *"$word"* ]]; then
+              echo "检测到关键字：$word"
+              echo "::set-output name=default::$word"
               exit 0
             fi
           done
-          echo "标题中不包含数组中的单词"
-          echo "::set-output name=default::${{ env.DEFAULT }}"
-
-      - name: add label
-        uses: actions-cool/issues-helper@v3
+          echo "未检测到关键字"
+          echo "::set-output name=default::bug"
+        shell: bash
+        outputs:
+          default: ${{ steps.first-action.outputs.default }}
+            
+      - name: 第二个 Action
+        id: second-action
+        uses: my-org/my-repo/my-action@v1
         with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: ${{ steps.check-title.outputs.default }}
+          default: ${{ steps.first-action.outputs.default }}
 
-      - name: check invalid
-        if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'create-comment,add-labels,close-issue'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'closed:invalid'
-          body: |
-            Hello @${{ github.event.issue.user.login }}, your issue has been closed because it does not include reproduce step.
+      # - name: add label
+      #   uses: actions-cool/issues-helper@v3
+      #   with:
+      #     actions: 'add-labels'
+      #     issue-number: ${{ github.event.issue.number }}
+      #     labels: ${{ steps.check-title.outputs.default }}
+
+      # - name: check invalid
+      #   if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
+      #   uses: actions-cool/issues-helper@v3
+      #   with:
+      #     actions: 'create-comment,add-labels,close-issue'
+      #     issue-number: ${{ github.event.issue.number }}
+      #     labels: 'closed:invalid'
+      #     body: |
+      #       Hello @${{ github.event.issue.user.login }}, your issue has been closed because it does not include reproduce step.
 
