@@ -20,7 +20,8 @@ jobs:
       - name: check title
         id: check-title
         run: |
-          title="${{ github.event.head_commit.message }}"
+          title="${{ github.event.issue.title }}"
+
           for word in "${{ env.WORDS[@] }}"; do
             if [[ $title == *"$word"* ]]; then
               echo "标题中包含单词 $word"
