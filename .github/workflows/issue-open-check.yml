@@ -12,7 +12,8 @@ jobs:
     permissions:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
-    using: 'node16'
+    runs:
+      using: 'node16'
     steps:
       - name: check issue title
         id: check-issue
