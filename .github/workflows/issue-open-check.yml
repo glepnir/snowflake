@@ -30,7 +30,6 @@ jobs:
           done
           echo "未检测到关键字"
           echo "::set-output name=default::bug"
-        shell: bash
         outputs:
           default: ${{ steps.first-action.outputs.default }}
             
