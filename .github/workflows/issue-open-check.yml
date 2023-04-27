@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Title
-        id: check-title
         run: |
           title="${{ github.event.issue.title }}"
           for word in "${{ env.words[@] }}"; do
