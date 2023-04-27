@@ -7,13 +7,6 @@ on:
 permissions:
   contents: read
 
-env:
-  DEFAULT: bug
-  WORDS: |
-    enhancement
-    bugfix
-    feature
-
 jobs:
   issue-open-check:
     permissions:
@@ -25,8 +18,10 @@ jobs:
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          using: 'node16'
           script: |
             const title = context.payload.issue.title;
+            console.log(title)
             const keywords = ['fix', 'bug', 'error']; // 要检查的关键词
             const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'i');
             const match = title.match(regex);
