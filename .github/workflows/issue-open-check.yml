@@ -12,62 +12,25 @@ jobs:
     permissions:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
+    env:
+      LABELS: 'api,ui,treesitter,lsp,docmentaion,winbar'
+      DEFAULT: 'bug'
     steps:
-      - name: add api label
-        if: (contains(github.event.issue.title, 'api') == true)
+      - name: add label
         uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'api'
+        run: |
+          IFS=',' read -ra LABELS_ARR <<< "$LABELS"
 
-      - name: add lua label
-        if: (contains(github.event.issue.title, 'lua') == true)
-        uses: actions-cool/issues-helper@v3
+          for word in "${LABELS_ARR[@]}"; do
+            if [[ "${{ github.event.issue.title }}" == *"$word"* ]]; then
+              export DEFAULT=$word
+              break
+            fi
+          done
         with:
           actions: 'add-labels'
           issue-number: ${{ github.event.issue.number }}
-          labels: 'lua'
-
-      - name: add ui label
-        if: (contains(github.event.issue.title, 'ui') == true)
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'ui'
-
-      - name: add treesitter label
-        if: (contains(github.event.issue.title, 'treesitter') == true)
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'treesitter'
-
-      - name: add lsp label
-        if: (contains(github.event.issue.title, 'lsp') == true)
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'treesitter'
-
-      - name: add doc label
-        if: (contains(github.event.issue.title, 'doc') == true)
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'docmentation'
-
-      - name: add filetype label
-        if: (contains(github.event.issue.title, 'filetype') == true)
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'add-labels'
-          issue-number: ${{ github.event.issue.number }}
-          labels: 'filetype'
+          labels: ${{env.DEFAULT}}
 
       - name: check invalid
         if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
