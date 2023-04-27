@@ -24,7 +24,9 @@ jobs:
             const match = title.match(regex);
 
             if (match) {
-              core.setOutput('keyword', match[0]); // 将关键词输出到变量中
+              core.setOutput('keyword', match[0]);
+            } else {
+              core.setOutput('keyword', 'bug');
             }
 
       - name: add label
