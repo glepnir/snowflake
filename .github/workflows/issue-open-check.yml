@@ -8,14 +8,8 @@ permissions:
   contents: read
 
 env:
-  LABELS: |
-    api
-    ui
-    treesitter
-    lsp
-    docmentaion
-    winbar
-  DEFAULT: 'bug'
+  DEFAULT: "bug"
+  WORDS: ["fix", "issue", "bug"]
 
 jobs:
   issue-open-check:
@@ -23,29 +17,26 @@ jobs:
       issues: write  # for actions-cool/issues-helper to update issues
     runs-on: ubuntu-latest
     steps:
-      - name: Get label
+      - name: check title
+        id: check-title
         run: |
-          words=("api", "lsp")
-
-          default="bug"
-
-          for word in "${words[@]}"; do
-            if [[ ${{ github.event.issue.title}} == *"$word"* ]]; then
-              default="$word"
-              break
+          title="${{ github.event.head_commit.message }}"
+          for word in "${{ env.WORDS[@] }}"; do
+            if [[ $title == *"$word"* ]]; then
+              echo "标题中包含单词 $word"
+              echo "::set-output name=default::${word}"
+              exit 0
             fi
           done
-
-          # 将 default 变量输出到标准输出和 Action 输出中
-          echo "::set-output name=default::$default"
-          echo "default=$default"
+          echo "标题中不包含数组中的单词"
+          echo "::set-output name=default::${{ env.DEFAULT }}"
 
       - name: add label
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'add-labels'
           issue-number: ${{ github.event.issue.number }}
-          labels:  ${{ steps.first-action.outputs.default }}
+          labels: ${{ steps.check-title.outputs.default }}
 
       - name: check invalid
         if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
