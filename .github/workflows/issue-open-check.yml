@@ -24,7 +24,6 @@ jobs:
         id: check_title
         uses: actions/github-script@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const words = '${{ env.WORDS }}'.split('\n').filter(Boolean);
             const defaultVal = '${{ env.DEFAULT }}';
