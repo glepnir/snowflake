@@ -62,7 +62,7 @@ jobs:
           labels: 'docmentation'
 
       - name: add filetype label
-        if: (contains(github.event.issue.title, 'filetype') == true) && (github.event.label.name != 'enhancement')
+        if: (contains(github.event.issue.title, 'filetype') == true)
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'add-labels'
@@ -70,7 +70,7 @@ jobs:
           labels: 'filetype'
 
       - name: check invalid
-        if: (contains(github.event.issue.body, 'Step to Reproduce') == false)
+        if: (contains(github.event.issue.body, 'Step to Reproduce') == false)  && (github.event.label.name != 'enhancement')
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'create-comment,add-labels,close-issue'
